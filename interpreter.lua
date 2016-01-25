@@ -43,93 +43,93 @@ function Context:Sort(e)
 		top = top + 1
 		index = last + 1
 	end
- 	--table.foreach(stack,print)
- 	return stack
- end
+	--table.foreach(stack,print)
+	return stack
+end
 
- function Context:new(e,o)
- 	o = o or {}
- 	setmetatable(o,self)
- 	self.__index = self
- 	o.stack = {}
- 	o.top = 1 --顶指针
- 	o.expression = self:Sort(e)
- 	return o
- end
+function Context:new(e,o)
+	o = o or {}
+	setmetatable(o,self)
+	self.__index = self
+	o.stack = {}
+	o.top = 1 --顶指针
+	o.expression = self:Sort(e)
+	return o
+end
 
- function Context:Calculate()
- 	self.top = 1
- 	local i = 1
- 	while 1 do
- 		if i >= #self.expression then
- 			break
- 		end
- 		if string.find(self.expression[i],"+") then
- 			self.stack[self.top - 1] = AddExpression:new(self.stack[self.top],VarExpression:new(self.expression[i + 1]))
- 			i = i + 2
- 		elseif string.find(self.expression[i],"-") then
- 			self.stack[self.top - 1] = SubExpression:new(self.stack[self.top],VarExpression:new(self.expression[i + 1]))
- 			i = i + 2
- 		else
- 			self.stack[self.top] = VarExpression:new(self.expression[i])
- 			i = i + 1
- 			self.top = self.top + 1
- 		end
- 	end
+function Context:Calculate()
+	self.top = 1
+	local i = 1
+	while 1 do
+		if i >= #self.expression then
+			break
+		end
+		if string.find(self.expression[i],"+") then
+			self.stack[self.top - 1] = AddExpression:new(self.stack[self.top],VarExpression:new(self.expression[i + 1]))
+			i = i + 2
+		elseif string.find(self.expression[i],"-") then
+			self.stack[self.top - 1] = SubExpression:new(self.stack[self.top],VarExpression:new(self.expression[i + 1]))
+			i = i + 2
+		else
+			self.stack[self.top] = VarExpression:new(self.expression[i])
+			i = i + 1
+			self.top = self.top + 1
+		end
+	end
 
- 	for i = 1,self.top - 1,1 do
- 		print(self.stack[i]:Interpret())
- 	end
- end
+	for i = 1,self.top - 1,1 do
+		print(self.stack[i]:Interpret())
+	end
+end
 
- AbstractExpression = {}
+AbstractExpression = {}
 
- function AbstractExpression:new(o)
- 	o = o or {}
- 	setmetatable(o,self)
- 	self.__index = self
- 	return o
- end
+function AbstractExpression:new(o)
+	o = o or {}
+	setmetatable(o,self)
+	self.__index = self
+	return o
+end
 
- TerminalExpression = AbstractExpression:new()
+TerminalExpression = AbstractExpression:new()
 
- function TerminalExpression:new(v,o)
- 	o = o or {}
- 	setmetatable(o,self)
- 	self.__index = self
- 	o.val = v
- 	return o
- end
+function TerminalExpression:new(v,o)
+	o = o or {}
+	setmetatable(o,self)
+	self.__index = self
+	o.val = v
+	return o
+end
 
- function TerminalExpression:Interpret()
- 	return self.val
- end
+function TerminalExpression:Interpret()
+	return self.val
+end
 
- VarExpression = TerminalExpression:new()
+VarExpression = TerminalExpression:new()
 
- NonterminalExpression = AbstractExpression:new()
+NonterminalExpression = AbstractExpression:new()
 
- function NonterminalExpression:new(l,r,o)
- 	o = o or {}
- 	setmetatable(o,self)
- 	self.__index = self
- 	o.left = l
- 	o.right = r
- 	return o
- end
+function NonterminalExpression:new(l,r,o)
+	o = o or {}
+	setmetatable(o,self)
+	self.__index = self
+	o.left = l
+	o.right = r
+	return o
+end
 
- AddExpression = NonterminalExpression:new()
+AddExpression = NonterminalExpression:new()
 
- function AddExpression:Interpret(c)
- 	return self.left:Interpret() + self.right:Interpret()
- end
+function AddExpression:Interpret(c)
+	return self.left:Interpret() + self.right:Interpret()
+end
 
- SubExpression = NonterminalExpression:new()
+SubExpression = NonterminalExpression:new()
 
- function SubExpression:Interpret(c)
- 	return self.left:Interpret() - self.right:Interpret()
- end
+function SubExpression:Interpret(c)
+	return self.left:Interpret() - self.right:Interpret()
+end
 
 
- c = Context:new("1+9-3+5")
- c:Calculate()
+c = Context:new("1+9-3+5")
+c:Calculate()
